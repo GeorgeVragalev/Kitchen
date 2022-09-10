@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace DiningHall.Controllers;
 
 [ApiController]
-[Route("api/controller/order")]
+[Route("/distribution")]
 public class OrderController : ControllerBase
 {
     [HttpPost]
