@@ -1,9 +1,7 @@
-﻿namespace DiningHall.Models;
+﻿namespace Kitchen.Models;
 
-public class Food
+public class Food : BaseEntity
 {
-    public int Id { get; set; }
-
     public string Name { get; set; }
 
     public int PreparationTime { get; set; }
@@ -14,9 +12,8 @@ public class Food
 
     public Food() { }
 
-    public Food(int id, string name, int preparationTime, int complexity, CookingApparatus cookingApparatus)
+    public Food(string name, int preparationTime, int complexity, CookingApparatus cookingApparatus)
     {
-        Id = id;
         Name = name;
         PreparationTime = preparationTime;
         Complexity = complexity;

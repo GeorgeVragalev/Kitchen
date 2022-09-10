@@ -1,4 +1,4 @@
-﻿namespace DiningHall.Models;
+﻿namespace Kitchen.Models;
 
 public class CookingDetails
 {

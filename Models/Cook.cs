@@ -1,8 +1,7 @@
-﻿namespace DiningHall.Models;
+﻿namespace Kitchen.Models;
 
-public class Cook
+public class Cook : BaseEntity
 {
-    public int Id { get; set; }
     public string Name { get; set; }
     public int Rank { get; set; }
     public int Proficiency { get; set; }   
@@ -11,9 +10,8 @@ public class Cook
 
     public Cook(){}
 
-    public Cook(int id, string name, int rank, int proficiency, string catchPhrase, bool isBusy)
+    public Cook( string name, int rank, int proficiency, string catchPhrase, bool isBusy)
     {
-        Id = id;
         Name = name;
         Rank = rank;
         Proficiency = proficiency;

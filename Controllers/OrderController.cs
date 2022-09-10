@@ -4,13 +4,13 @@ using Microsoft.AspNetCore.Mvc;
 namespace DiningHall.Controllers;
 
 [ApiController]
-[Route("/distribution")]
+[Route("/order")]
 public class OrderController : ControllerBase
 {
     [HttpPost]
-    public ActionResult Index()
+    public ActionResult Index([FromBody] Order order)
     {
-        var order = new Order()
+        var order2 = new Order()
         {
             Id = 1,
             Foods = new List<int>() {1, 2, 4},
@@ -18,6 +18,7 @@ public class OrderController : ControllerBase
             TableId = 2,
             WaiterId = 1
         };
+        order = order2;
         
         return new JsonResult(order);
     }
