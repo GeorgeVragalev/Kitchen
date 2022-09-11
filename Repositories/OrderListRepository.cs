@@ -1,9 +1,6 @@
 ﻿namespace Kitchen.Repositories;
 
-public class OrderListRepository : IOrderListRepository, IDisposable
+public class OrderListRepository : IOrderListRepository
 {
-    public void Dispose()
-    {
-        throw new NotImplementedException();
-    }
+    
 }

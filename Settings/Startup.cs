@@ -1,4 +1,7 @@
-﻿using Kitchen.Services;
+﻿using Kitchen.Kitchen;
+using Kitchen.Repositories;
+using Kitchen.Services;
+using Kitchen.Services.OrderService;
 
 namespace Kitchen.Settings;
 public class Startup
@@ -16,8 +19,10 @@ public class Startup
         services.AddControllers();
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
-        services.AddHostedService<BackgroundTask.BackgroundTask>();
-        services.AddSingleton<IKitchenService, KitchenService>();
+        services.AddScoped<IKitchenService, KitchenService>();
+        services.AddScoped<IOrderListRepository, OrderListRepository>();
+        services.AddScoped<IOrderService, OrderService>();
+        services.AddScoped<IKitchen, Kitchen.Kitchen>();
     }
 
     public void Configure(WebApplication app, IWebHostEnvironment env)
