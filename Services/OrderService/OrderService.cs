@@ -6,6 +6,13 @@ namespace Kitchen.Services.OrderService;
 
 public class OrderService : IOrderService
 {
+    private readonly ILogger<OrderService> _logger;
+
+    public OrderService(ILogger<OrderService> logger)
+    {
+        _logger = logger;
+    }
+
     public async void SendOrder(Order order)
     {
         try
@@ -17,6 +24,8 @@ public class OrderService : IOrderService
             using var client = new HttpClient();
 
             var response = await client.PostAsync(url, data);
+            _logger.LogInformation("Order "+ order.Id+" finished");
+
             var result = await response.Content.ReadAsStringAsync();
         }
         catch (Exception e)

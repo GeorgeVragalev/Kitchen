@@ -27,7 +27,7 @@ public class OrderController : ControllerBase
     {
         var order = collectedOrder.MapFinishedOrder();
         
-        _logger.LogInformation("Order "+ order.Id+" received");
+        _logger.LogInformation("Order "+ order.Id+" received in kitchen");
         
         _orderService.SendOrder(order);
         // return new JsonResult(order);
