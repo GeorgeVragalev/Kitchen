@@ -18,6 +18,6 @@ public class Kitchen : IKitchen
 
     public void RunKitchen(Order order)
     {
-        _orderService.SendOrder(order);
+        _orderService.PrepareOrder(order);
     }
 }

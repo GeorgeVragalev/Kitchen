@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Kitchen.Helpers;
 using Kitchen.Models;
 using Newtonsoft.Json;
 
@@ -24,7 +25,7 @@ public class OrderService : IOrderService
             using var client = new HttpClient();
 
             var response = await client.PostAsync(url, data);
-            _logger.LogInformation("Order "+ order.Id+" finished");
+            Console.WriteLine("Order "+ order.Id+" finished");
 
             var result = await response.Content.ReadAsStringAsync();
         }
@@ -32,5 +33,22 @@ public class OrderService : IOrderService
         {
             Console.WriteLine("Failed to send order with id:" + order.Id);
         }
+    }
+
+    public void PrepareOrder(Order order)
+    {
+        order.CookingDetails = new List<CookingDetails>();
+        order.CookingTime = order.MaxWait - RandomGenerator.NumberGenerator(Settings.Settings.Cooks);
+        foreach (var foodId in order.Foods)
+        {
+            var cookingDetails = new CookingDetails();
+            var cookId = RandomGenerator.NumberGenerator(Settings.Settings.Cooks);
+            cookingDetails.CookId = cookId;
+            cookingDetails.FoodId = foodId;
+
+            order.CookingDetails.Add(cookingDetails);
+        }
+        
+        SendOrder(order);
     }
 }
