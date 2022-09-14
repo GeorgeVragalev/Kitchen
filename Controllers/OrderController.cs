@@ -29,7 +29,13 @@ public class OrderController : ControllerBase
         
         _logger.LogInformation("Order "+ order.Id+" received in kitchen");
         
-        _orderService.SendOrder(order);
+        _kitchen.RunKitchen(order);
         // return new JsonResult(order);
+    }
+    
+    [HttpGet]
+    public ContentResult Get()
+    {
+        return Content("Hi");
     }
 }

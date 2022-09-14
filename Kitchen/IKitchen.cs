@@ -1,6 +1,8 @@
-﻿namespace Kitchen.Kitchen;
+﻿using Kitchen.Models;
+
+namespace Kitchen.Kitchen;
 
 public interface IKitchen
 {
-    public void RunKitchen();
+    public void RunKitchen(Order order);
 }

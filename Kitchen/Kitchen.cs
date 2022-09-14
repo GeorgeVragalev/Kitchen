@@ -1,4 +1,5 @@
-﻿using Kitchen.Repositories;
+﻿using Kitchen.Models;
+using Kitchen.Repositories;
 using Kitchen.Services.OrderService;
 
 namespace Kitchen.Kitchen;
@@ -15,8 +16,8 @@ public class Kitchen : IKitchen
     }
 
 
-    public void RunKitchen()
+    public void RunKitchen(Order order)
     {
-        // _orderService.SendOrder(o);
+        _orderService.SendOrder(order);
     }
 }
