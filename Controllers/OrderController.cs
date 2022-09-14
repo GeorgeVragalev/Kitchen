@@ -1,39 +1,41 @@
-﻿using DiningHall.Models;
+﻿using Kitchen.Helpers;
+using Kitchen.Kitchen;
+using Kitchen.Models;
+using Kitchen.Services.OrderService;
 using Microsoft.AspNetCore.Mvc;
 
-namespace DiningHall.Controllers;
+namespace Kitchen.Controllers;
 
 [ApiController]
-[Route("api/controller/order")]
+[Route("/order")]
 public class OrderController : ControllerBase
 {
-    [HttpPost]
-    public ActionResult Index()
+    private readonly IKitchen _kitchen;
+    private readonly IOrderService _orderService;
+    private readonly ILogger<OrderController> _logger;
+
+
+    public OrderController(IKitchen kitchen, IOrderService orderService, ILogger<OrderController> logger)
     {
-        var order = new Order()
-        {
-            Id = 1,
-            Foods = new List<int>() {1, 2, 4},
-            MaxWait = 30,
-            TableId = 2,
-            WaiterId = 1
-        };
+        _kitchen = kitchen;
+        _orderService = orderService;
+        _logger = logger;
+    }
+
+    [HttpPost]
+    public void Order([FromBody] CollectedOrder collectedOrder)
+    {
+        var order = collectedOrder.MapFinishedOrder();
         
-        return new JsonResult(order);
+        _logger.LogInformation("Order "+ order.Id+" received in kitchen");
+        
+        _kitchen.RunKitchen(order);
+        // return new JsonResult(order);
     }
     
     [HttpGet]
-    public ActionResult Get()
+    public ContentResult Get()
     {
-        var order = new Order()
-        {
-            Id = 2,
-            Foods = new List<int>() {4},
-            MaxWait = 3,
-            TableId = 1,
-            WaiterId = 1
-        };
-        
-        return new JsonResult(order);
+        return Content("Hi");
     }
 }
