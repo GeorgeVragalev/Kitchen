@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using Kitchen.Helpers;
 using Kitchen.Models;
+using Kitchen.Repositories.OrderListRepository;
 using Newtonsoft.Json;
 
 namespace Kitchen.Services.OrderService;
@@ -8,10 +9,12 @@ namespace Kitchen.Services.OrderService;
 public class OrderService : IOrderService
 {
     private readonly ILogger<OrderService> _logger;
+    private readonly IOrderListRepository _orderListRepository;
 
-    public OrderService(ILogger<OrderService> logger)
+    public OrderService(ILogger<OrderService> logger, IOrderListRepository orderListRepository)
     {
         _logger = logger;
+        _orderListRepository = orderListRepository;
     }
 
     public async void SendOrder(Order order)
@@ -25,13 +28,14 @@ public class OrderService : IOrderService
             using var client = new HttpClient();
 
             var response = await client.PostAsync(url, data);
-            Console.WriteLine("Order "+ order.Id+" finished");
+            Console.WriteLine();
+            PrintConsole.Write("Order "+ order.Id+" ready to be served", ConsoleColor.Green);
 
             var result = await response.Content.ReadAsStringAsync();
         }
         catch (Exception e)
         {
-            Console.WriteLine("Failed to send order with id:" + order.Id);
+            PrintConsole.Write("Failed to send order with id:" + order.Id, ConsoleColor.Red);
         }
     }
 
@@ -49,6 +53,24 @@ public class OrderService : IOrderService
             order.CookingDetails.Add(cookingDetails);
         }
         
+        PrintConsole.Write("Order "+ order.Id+" prepared", ConsoleColor.DarkBlue);
+
         SendOrder(order);
+    }
+
+    public void AddOrderToList(Order order)
+    {
+        _orderListRepository.AddOrderToList(order);   
+    }
+
+    public Order GetOrder()
+    {
+        var order = _orderListRepository.GetOrder();
+        return order;
+    }
+
+    public void RemoveOrder(Order order)
+    {
+        _orderListRepository.RemoveOrder(order);
     }
 }

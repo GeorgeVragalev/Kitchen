@@ -1,5 +1,7 @@
 ﻿using Kitchen.Kitchen;
 using Kitchen.Repositories;
+using Kitchen.Repositories.CookRepository;
+using Kitchen.Repositories.OrderListRepository;
 using Kitchen.Services;
 using Kitchen.Services.OrderService;
 
@@ -19,10 +21,16 @@ public class Startup
         services.AddControllers();
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
-        services.AddScoped<IKitchenService, KitchenService>();
-        services.AddScoped<IOrderListRepository, OrderListRepository>();
-        services.AddScoped<IOrderService, OrderService>();
-        services.AddScoped<IKitchen, Kitchen.Kitchen>();
+        services.AddLogging(config => config.ClearProviders());
+
+        services.AddSingleton<IKitchenService, KitchenService>();
+        services.AddSingleton<IOrderService, OrderService>();
+        
+        services.AddSingleton<IOrderListRepository, OrderListRepository>();
+        services.AddSingleton<ICookRepository, CookRepository>();
+        
+        services.AddSingleton<IKitchen, Kitchen.Kitchen>();
+        services.AddHostedService<BackgroundTask.BackgroundTask>();
     }
 
     public void Configure(WebApplication app, IWebHostEnvironment env)
@@ -32,6 +40,7 @@ public class Startup
         {
             app.UseSwagger();
             app.UseSwaggerUI();
+            
         }
 
         app.UseHttpsRedirection();

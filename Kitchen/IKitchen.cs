@@ -4,5 +4,5 @@ namespace Kitchen.Kitchen;
 
 public interface IKitchen
 {
-    public void RunKitchen(Order order);
+    public void RunKitchen(CancellationToken cancellationToken);
 }

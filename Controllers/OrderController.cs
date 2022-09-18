@@ -26,9 +26,9 @@ public class OrderController : ControllerBase
     public void Order([FromBody] CollectedOrder collectedOrder)
     {
         var order = collectedOrder.MapFinishedOrder();
-        Console.WriteLine("Order "+ order.Id+" received in kitchen");
-        
-        _kitchen.RunKitchen(order);
+        PrintConsole.Write("Order "+ order.Id+" received in kitchen", ConsoleColor.Green);
+
+        _orderService.AddOrderToList(order);
         // return new JsonResult(order);
     }
     
