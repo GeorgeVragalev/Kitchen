@@ -1,6 +1,4 @@
-﻿using Kitchen.Models;
-
-namespace Kitchen.Kitchen;
+﻿namespace Kitchen.Kitchen;
 
 public interface IKitchen
 {

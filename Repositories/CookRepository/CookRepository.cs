@@ -7,7 +7,7 @@ public class CookRepository : ICookRepository
 {
     private readonly ConcurrentBag<Cook> _cooks = new ConcurrentBag<Cook>();
 
-    public ConcurrentBag<Cook> GenerateCooks()
+    public void GenerateCooks()
     {
         for (int i = 1; i <= Settings.Settings.Cooks; i++)
         {
@@ -20,13 +20,19 @@ public class CookRepository : ICookRepository
             };
             _cooks.Add(cook);
         }
-
-        return _cooks;
     }
 
     public Task<Cook> GetById(int id)
     {
-        throw new NotImplementedException();
+        foreach (var cook in _cooks)
+        {
+            if (cook.Id == id)
+            {
+                return Task.FromResult(cook);
+            }
+        }
+
+        return Task.FromResult<Cook>(null!);
     }
 
     public ConcurrentBag<Cook> GetAll()
@@ -34,8 +40,16 @@ public class CookRepository : ICookRepository
         throw new NotImplementedException();
     }
 
-    public Task<Cook> GetAvailableCook()
+    public Task<Cook>? GetAvailableCook()
     {
-        throw new NotImplementedException();
+        foreach (var cook in _cooks)
+        {
+            if (!cook.IsBusy)
+            {
+                return Task.FromResult(cook);
+            }
+        }
+
+        return null;
     }
 }

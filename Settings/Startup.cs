@@ -1,8 +1,7 @@
 ﻿using Kitchen.Kitchen;
-using Kitchen.Repositories;
 using Kitchen.Repositories.CookRepository;
 using Kitchen.Repositories.OrderListRepository;
-using Kitchen.Services;
+using Kitchen.Services.CookService;
 using Kitchen.Services.OrderService;
 
 namespace Kitchen.Settings;
@@ -23,8 +22,8 @@ public class Startup
         services.AddSwaggerGen();
         services.AddLogging(config => config.ClearProviders());
 
-        services.AddSingleton<IKitchenService, KitchenService>();
         services.AddSingleton<IOrderService, OrderService>();
+        services.AddSingleton<ICookService, CookService>();
         
         services.AddSingleton<IOrderListRepository, OrderListRepository>();
         services.AddSingleton<ICookRepository, CookRepository>();

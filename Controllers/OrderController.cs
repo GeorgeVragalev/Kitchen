@@ -12,14 +12,12 @@ public class OrderController : ControllerBase
 {
     private readonly IKitchen _kitchen;
     private readonly IOrderService _orderService;
-    private readonly ILogger<OrderController> _logger;
 
 
-    public OrderController(IKitchen kitchen, IOrderService orderService, ILogger<OrderController> logger)
+    public OrderController(IKitchen kitchen, IOrderService orderService)
     {
         _kitchen = kitchen;
         _orderService = orderService;
-        _logger = logger;
     }
 
     [HttpPost]

@@ -8,12 +8,10 @@ namespace Kitchen.Services.OrderService;
 
 public class OrderService : IOrderService
 {
-    private readonly ILogger<OrderService> _logger;
     private readonly IOrderListRepository _orderListRepository;
 
-    public OrderService(ILogger<OrderService> logger, IOrderListRepository orderListRepository)
+    public OrderService(IOrderListRepository orderListRepository)
     {
-        _logger = logger;
         _orderListRepository = orderListRepository;
     }
 
@@ -27,11 +25,9 @@ public class OrderService : IOrderService
             var url = Settings.Settings.DiningHallUrl;
             using var client = new HttpClient();
 
-            var response = await client.PostAsync(url, data);
+            await client.PostAsync(url, data);
             Console.WriteLine();
             PrintConsole.Write("Order "+ order.Id+" ready to be served", ConsoleColor.Green);
-
-            var result = await response.Content.ReadAsStringAsync();
         }
         catch (Exception e)
         {
