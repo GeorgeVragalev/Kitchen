@@ -14,12 +14,54 @@ public class CookRepository : ICookRepository
             var cook = new Cook()
             {
                 Id = i,
-                Proficiency = (i>3 ? 3 : i),
+                Rank = (i > 3 ? 3 : i),
+                Proficiency = (i > 4 ? 4 : i + 1),
                 Name = "Gordon Ramsey:" + i,
                 CatchPhrase = "Hey panini head, are you listening to me?"
             };
             _cooks.Add(cook);
         }
+    }
+
+    public void TestConfiguration()
+    {
+        var cook1 = new Cook()
+        {
+            Id = 1,
+            Rank = 1,
+            Proficiency = 2,
+            Name = "Gordon Ramsey nr 1",
+            CatchPhrase = "Hey panini head, are you listening to me?"
+        };
+        var cook2 = new Cook()
+        {
+            Id = 2,
+            Rank = 2,
+            Proficiency = 2,
+            Name = "Gordon Ramsey nr 2",
+            CatchPhrase = "Hey panini head, are you listening to me?"
+        };
+        var cook3 = new Cook()
+        {
+            Id = 3,
+            Rank = 2,
+            Proficiency = 3,
+            Name = "Gordon Ramsey nr 3",
+            CatchPhrase = "Hey panini head, are you listening to me?"
+        };
+        var cook4 = new Cook()
+        {
+            Id = 4,
+            Rank = 3,
+            Proficiency = 4,
+            Name = "Gordon Ramsey nr 4",
+            CatchPhrase = "Hey panini head, are you listening to me?"
+        };
+        
+        _cooks.Add(cook1);
+        _cooks.Add(cook2);
+        _cooks.Add(cook3);
+        _cooks.Add(cook4);
     }
 
     public Task<Cook> GetById(int id)
@@ -37,7 +79,7 @@ public class CookRepository : ICookRepository
 
     public ConcurrentBag<Cook> GetAll()
     {
-        throw new NotImplementedException();
+        return _cooks;
     }
 
     public Task<Cook>? GetAvailableCook()

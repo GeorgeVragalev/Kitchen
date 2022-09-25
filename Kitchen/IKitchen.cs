@@ -2,5 +2,6 @@
 
 public interface IKitchen
 {
-    public void RunKitchen(CancellationToken cancellationToken);
+    public void ExecuteCode(CancellationToken cancellationToken);
+
 }

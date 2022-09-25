@@ -1,7 +1,9 @@
 ﻿using Kitchen.Kitchen;
 using Kitchen.Repositories.CookRepository;
+using Kitchen.Repositories.FoodRepository;
 using Kitchen.Repositories.OrderListRepository;
 using Kitchen.Services.CookService;
+using Kitchen.Services.FoodService;
 using Kitchen.Services.OrderService;
 
 namespace Kitchen.Settings;
@@ -24,9 +26,11 @@ public class Startup
 
         services.AddSingleton<IOrderService, OrderService>();
         services.AddSingleton<ICookService, CookService>();
+        services.AddSingleton<IFoodService, FoodService>();
         
         services.AddSingleton<IOrderListRepository, OrderListRepository>();
         services.AddSingleton<ICookRepository, CookRepository>();
+        services.AddSingleton<IFoodRepository, FoodRepository>();
         
         services.AddSingleton<IKitchen, Kitchen.Kitchen>();
         services.AddHostedService<BackgroundTask.BackgroundTask>();

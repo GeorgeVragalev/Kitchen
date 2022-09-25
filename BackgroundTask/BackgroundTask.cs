@@ -23,7 +23,7 @@ public class BackgroundTask : BackgroundService
         using (var scope = _serviceScopeFactory.CreateScope())
         {
             var scoped = scope.ServiceProvider.GetRequiredService<IKitchen>();
-            scoped.RunKitchen(stoppingToken);
+            scoped.ExecuteCode(stoppingToken);
         }
     }
 }
