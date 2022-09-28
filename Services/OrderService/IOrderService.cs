@@ -5,8 +5,8 @@ namespace Kitchen.Services.OrderService;
 public interface IOrderService
 {
     public void SendOrder(Order order);
-    public void PrepareOrder(Order order);
     public void AddOrderToList(Order order);
-    public Order GetOrder();
-    public void RemoveOrder(Order order);
+    public Order CollectOrder();
+    public void IncrementPreparedFoodCounter(int id);
+    public Order GetUnservedOrder();
 }

@@ -1,7 +1,7 @@
-﻿using Kitchen.Helpers;
+﻿using System.Diagnostics.CodeAnalysis;
+using Kitchen.Helpers;
 using Kitchen.Models;
-using Kitchen.Repositories.CookRepository;
-using Kitchen.Repositories.OrderListRepository;
+using Kitchen.Models.Enums;
 using Kitchen.Services.CookService;
 using Kitchen.Services.FoodService;
 using Kitchen.Services.OrderService;
@@ -34,7 +34,7 @@ public class Kitchen : IKitchen
         //get cooks 
         //initialize threads
         RunThreads(cancellationToken);
-        
+
         //look for orders to cook
         // RunKitchen(cancellationToken);
     }
@@ -51,27 +51,54 @@ public class Kitchen : IKitchen
         t3.Start();
         t4.Start();
         t5.Start();
+
+        Thread t6 = new Thread(() => SendOrder(cancellationToken));
+        t6.Start();
     }
 
+    private void SendOrder(CancellationToken cancellationToken)
+    {
+        while (!cancellationToken.IsCancellationRequested)
+        {
+            var order = _orderService.GetUnservedOrder();
+            if (order != null)
+            {
+                PrintConsole.Write($"Found order with id {order.Id} ready to be sent", ConsoleColor.Blue);
+
+                order.OrderStatus = OrderStatus.Served;
+                _orderService.SendOrder(order);
+            }
+            else
+            {
+                Thread.Sleep(2 * Settings.Settings.TimeUnit);
+            }
+        }
+    }
+
+    [SuppressMessage("ReSharper.DPA", "DPA0001: Memory allocation issues")]
     public void RunKitchen(CancellationToken cancellationToken)
     {
         while (!cancellationToken.IsCancellationRequested)
         {
             var cook = _cookService.GetAvailableCook();
-            var order = _orderService.GetOrder();
-            if (order != null)
+            if (cook == null)
             {
-                _orderService.RemoveOrder(order);
-                PrintConsole.Write("Order "+ order.Id+" being processed", ConsoleColor.DarkBlue);
-                PrepareOrder(order);
+                Thread.Sleep(4 * Settings.Settings.TimeUnit);
+                continue;
             }
-            Thread.Sleep(4000);
+
+            var foodsToCook = _foodService.GetOptimalFoodsToCook(cook.Proficiency, cook.MaxFoodsCanCook);
+            if (foodsToCook != null)
+            {
+                PrintConsole.Write($"Cook with id {cook.Id} is preparing foods: {foodsToCook.Count}", ConsoleColor.DarkCyan);
+                _cookService.MakeCookBusy(cook, foodsToCook);
+            }
+            else
+            {
+                cook.IsBusy = false;
+
+                Thread.Sleep(4 * Settings.Settings.TimeUnit);
+            }
         }
     }
-
-    public void PrepareOrder(Order order)
-    {
-        _orderService.PrepareOrder(order);
-    }
-    
 }

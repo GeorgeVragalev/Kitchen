@@ -1,7 +1,9 @@
 ﻿using System.Text;
 using Kitchen.Helpers;
 using Kitchen.Models;
+using Kitchen.Models.Enums;
 using Kitchen.Repositories.OrderListRepository;
+using Kitchen.Services.FoodService;
 using Newtonsoft.Json;
 
 namespace Kitchen.Services.OrderService;
@@ -9,10 +11,12 @@ namespace Kitchen.Services.OrderService;
 public class OrderService : IOrderService
 {
     private readonly IOrderListRepository _orderListRepository;
+    private readonly IFoodService _foodService;
 
-    public OrderService(IOrderListRepository orderListRepository)
+    public OrderService(IOrderListRepository orderListRepository, IFoodService foodService)
     {
         _orderListRepository = orderListRepository;
+        _foodService = foodService;
     }
 
     public async void SendOrder(Order order)
@@ -26,8 +30,9 @@ public class OrderService : IOrderService
             using var client = new HttpClient();
 
             await client.PostAsync(url, data);
+            order.OrderStatus = OrderStatus.Served;
             Console.WriteLine();
-            PrintConsole.Write("Order "+ order.Id+" ready to be served", ConsoleColor.Green);
+            PrintConsole.Write("Order " + order.Id + " ready to be served", ConsoleColor.Green);
         }
         catch (Exception e)
         {
@@ -35,38 +40,37 @@ public class OrderService : IOrderService
         }
     }
 
-    public void PrepareOrder(Order order)
-    {
-        order.CookingDetails = new List<CookingDetails>();
-        order.CookingTime = order.MaxWait - RandomGenerator.NumberGenerator(Settings.Settings.Cooks);
-        foreach (var foodId in order.Foods)
-        {
-            var cookingDetails = new CookingDetails();
-            var cookId = RandomGenerator.NumberGenerator(Settings.Settings.Cooks);
-            cookingDetails.CookId = cookId;
-            cookingDetails.FoodId = foodId;
-
-            order.CookingDetails.Add(cookingDetails);
-        }
-        
-        PrintConsole.Write("Order "+ order.Id+" prepared", ConsoleColor.DarkBlue);
-
-        SendOrder(order);
-    }
-
     public void AddOrderToList(Order order)
     {
-        _orderListRepository.AddOrderToList(order);   
+        _orderListRepository.AddOrderToList(order);
     }
 
-    public Order GetOrder()
+    public Order CollectOrder()
     {
-        var order = _orderListRepository.GetOrder();
+        var order = _orderListRepository.CollectOrder();
         return order;
     }
 
-    public void RemoveOrder(Order order)
+    public void IncrementPreparedFoodCounter(int id)
     {
-        _orderListRepository.RemoveOrder(order);
+        _orderListRepository.IncrementPreparedFoodCounter(id);
+    }
+    
+    public Order GetUnservedOrder()
+    {
+        var orders = _orderListRepository.GetUnservedOrders();
+
+        foreach (var order in orders)
+        {
+            var foods = _foodService.GetFoodsByOrder(order.Id);
+            bool completeOrder = foods.CheckStatus();
+            if (completeOrder)
+            {
+                
+                return order;
+            }
+        }
+
+        return null;
     }
 }

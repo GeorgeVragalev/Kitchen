@@ -7,16 +7,7 @@ public class Cook : BaseEntity
     public int Proficiency { get; set; }   
     public string CatchPhrase { get; set; }
     public bool IsBusy { get; set; }
-    public int MaxFoodsCanCook => Proficiency;
+    public int MaxFoodsCanCook { get; set; }
 
     public Cook(){}
-
-    public Cook( string name, int rank, int proficiency, string catchPhrase, bool isBusy)
-    {
-        Name = name;
-        Rank = rank;
-        Proficiency = proficiency;
-        CatchPhrase = catchPhrase;
-        IsBusy = isBusy;
-    }
 }  

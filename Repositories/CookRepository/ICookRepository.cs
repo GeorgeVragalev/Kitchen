@@ -9,5 +9,5 @@ public interface ICookRepository
     public void TestConfiguration();
     public Task<Cook> GetById(int id);
     public ConcurrentBag<Cook> GetAll();
-    public Task<Cook>? GetAvailableCook();
+    public Cook? GetAvailableCook();
 }

@@ -6,6 +6,7 @@ namespace Kitchen.Repositories.CookRepository;
 public class CookRepository : ICookRepository
 {
     private readonly ConcurrentBag<Cook> _cooks = new ConcurrentBag<Cook>();
+    private static Mutex _mutex = new();
 
     public void GenerateCooks()
     {
@@ -16,6 +17,8 @@ public class CookRepository : ICookRepository
                 Id = i,
                 Rank = (i > 3 ? 3 : i),
                 Proficiency = (i > 4 ? 4 : i + 1),
+                IsBusy = false,
+                MaxFoodsCanCook = (i > 4 ? 4 : i + 1),
                 Name = "Gordon Ramsey:" + i,
                 CatchPhrase = "Hey panini head, are you listening to me?"
             };
@@ -30,6 +33,8 @@ public class CookRepository : ICookRepository
             Id = 1,
             Rank = 1,
             Proficiency = 2,
+            IsBusy = false,
+            MaxFoodsCanCook = 2,
             Name = "Gordon Ramsey nr 1",
             CatchPhrase = "Hey panini head, are you listening to me?"
         };
@@ -38,6 +43,8 @@ public class CookRepository : ICookRepository
             Id = 2,
             Rank = 2,
             Proficiency = 2,
+            IsBusy = false,
+            MaxFoodsCanCook = 2,
             Name = "Gordon Ramsey nr 2",
             CatchPhrase = "Hey panini head, are you listening to me?"
         };
@@ -46,6 +53,8 @@ public class CookRepository : ICookRepository
             Id = 3,
             Rank = 2,
             Proficiency = 3,
+            IsBusy = false,
+            MaxFoodsCanCook = 3,
             Name = "Gordon Ramsey nr 3",
             CatchPhrase = "Hey panini head, are you listening to me?"
         };
@@ -54,6 +63,8 @@ public class CookRepository : ICookRepository
             Id = 4,
             Rank = 3,
             Proficiency = 4,
+            IsBusy = false,
+            MaxFoodsCanCook = 4,
             Name = "Gordon Ramsey nr 4",
             CatchPhrase = "Hey panini head, are you listening to me?"
         };
@@ -82,16 +93,20 @@ public class CookRepository : ICookRepository
         return _cooks;
     }
 
-    public Task<Cook>? GetAvailableCook()
+    public Cook GetAvailableCook()
     {
+        _mutex.WaitOne();
         foreach (var cook in _cooks)
         {
-            if (!cook.IsBusy)
+            if (cook.MaxFoodsCanCook > 0 && !cook.IsBusy)
             {
-                return Task.FromResult(cook);
+                cook.IsBusy = true;
+                _mutex.ReleaseMutex();
+                return cook;
             }
         }
-
+        
+        _mutex.ReleaseMutex();
         return null;
     }
 }
