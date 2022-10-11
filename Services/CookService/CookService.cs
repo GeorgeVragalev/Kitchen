@@ -12,14 +12,12 @@ namespace Kitchen.Services.CookService;
 public class CookService : ICookService
 {
     private readonly ICookRepository _cookRepository;
-    private readonly IOrderService _orderService;
     private readonly IFoodService _foodService;
     private readonly ICookingApparatusService _apparatusService;
 
-    public CookService(ICookRepository cookRepository, IOrderService orderService, IFoodService foodService, ICookingApparatusService apparatusService)
+    public CookService(ICookRepository cookRepository, IFoodService foodService, ICookingApparatusService apparatusService)
     {
         _cookRepository = cookRepository;
-        _orderService = orderService;
         _foodService = foodService;
         _apparatusService = apparatusService;
     }
@@ -50,8 +48,8 @@ public class CookService : ICookService
         var threads = cook.Proficiency;
         for (int i = 0; i < threads; i++)
         {
-            Thread t5 = new Thread(() => PrepareFoodParallel(cook));
-            t5.Start();
+            Thread t = new Thread(() => PrepareFoodParallel(cook));
+            t.Start();
         }
 
         cook.IsBusy = false;

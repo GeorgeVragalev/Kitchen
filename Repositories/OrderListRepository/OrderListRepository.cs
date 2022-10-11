@@ -8,7 +8,6 @@ namespace Kitchen.Repositories.OrderListRepository;
 public class OrderListRepository : IOrderListRepository
 {
     private readonly ConcurrentBag< Order> _orderList = new ConcurrentBag<Order>();
-    private static Mutex _mutex = new();
 
     public void AddOrderToList(Order order)
     {

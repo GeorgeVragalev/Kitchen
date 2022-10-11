@@ -15,7 +15,6 @@ public class Kitchen : IKitchen
     private readonly IOrderService _orderService;
     private readonly IFoodService _foodService;
     private readonly ICookingApparatusService _apparatusService;
-    private static Mutex _mutex = new();
 
     public Kitchen(IOrderService orderService, ICookService cookService, IFoodService foodService, ICookingApparatusService apparatusService)
     {
@@ -35,12 +34,7 @@ public class Kitchen : IKitchen
     public void ExecuteCode(CancellationToken cancellationToken)
     {
         InitializeKitchen();
-        //get cooks 
-        //initialize threads
         RunThreads(cancellationToken);
-
-        //look for orders to cook
-        // RunKitchen(cancellationToken);
     }
 
     private async void RunThreads(CancellationToken cancellationToken)
@@ -54,8 +48,8 @@ public class Kitchen : IKitchen
         t3.Start();
         t4.Start();
 
-        Thread t6 = new Thread(() => SendOrder(cancellationToken));
-        t6.Start();
+        Thread t5 = new Thread(() => SendOrder(cancellationToken));
+        t5.Start();
     }
 
     private void SendOrder(CancellationToken cancellationToken)
