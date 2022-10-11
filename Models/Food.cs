@@ -8,8 +8,8 @@ public class Food : BaseEntity
     public int PreparationTime { get; set; }
     public int Complexity { get; set; }
     public int Priority { get; set; }
-    public CookingApparatus CookingApparatus { get; set; }
-    public FoodStatus FoodStatus { get; set; }
+    public CookingApparatusEnum CookingApparatus { get; set; }
+    public FoodStatusEnum FoodStatusEnum { get; set; }
     public int OrderId { get; set; }
 
     public Food() { }

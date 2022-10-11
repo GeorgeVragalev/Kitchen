@@ -14,7 +14,7 @@ public class Order : BaseEntity
     [JsonIgnore]
     public int FoodsPreparedCount { get; set; }
     [JsonIgnore]
-    public OrderStatus OrderStatus { get; set; }
+    public OrderStatusEnum OrderStatusEnum { get; set; }
     public IList<int> Foods { get; set; }
     public DateTime PickUpTime { get; set; }
     public IList<CookingDetails> CookingDetails { get; set; }

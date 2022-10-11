@@ -13,51 +13,22 @@ public class OrderListRepository : IOrderListRepository
     public void AddOrderToList(Order order)
     {
         _orderList.Add( order);
-        PrintConsole.Write("Order "+ order.Id+" added to list", ConsoleColor.DarkBlue);
-    }
-
-
-    private Order? FindOptimalOrder()
-    {
-        var order = _orderList.AsQueryable().FirstOrDefault(o => o.OrderStatus == OrderStatus.IsCooking);
-
-        if (order != null)
-        {
-            order.OrderStatus = OrderStatus.IsCooking;
-            return order;
-        }
-
-        return null;
-    }
-
-    public Order CollectOrder()
-    {
-        var order = _orderList.AsQueryable()
-            .Where(o => o.OrderStatus == OrderStatus.IsCooking)
-            .FirstOrDefault(o => o.FoodsPreparedCount.Equals(o.Foods.Count));
-        
-        if (order!=null)
-        {
-            order.OrderStatus = OrderStatus.Served;
-            return order;
-        }
-
-        return null;
-    }
-
-    public void IncrementPreparedFoodCounter(int id)
-    {
-        _mutex.WaitOne();
-        var order = _orderList.AsQueryable()
-            .FirstOrDefault(o => o.Id == id);
-        if (order != null) 
-            order.FoodsPreparedCount += 1;
-        _mutex.ReleaseMutex();
+        PrintConsole.Write($"Order {order.Id} added to list", ConsoleColor.DarkBlue);
     }
 
     public IList<Order> GetUnservedOrders()
     {
-        var orders = _orderList.AsQueryable().Where(o => o.OrderStatus == OrderStatus.IsCooking).ToList();
+        var orders = _orderList.AsQueryable().Where(o => o.OrderStatusEnum == OrderStatusEnum.IsCooking).ToList();
         return orders;
+    }
+
+    public Task CleanServedOrders()
+    {
+        var orders = _orderList.Where(o => o.OrderStatusEnum == OrderStatusEnum.Served).ToList();
+        if (orders.Count != 0)
+        {
+            orders.Clear();
+        }
+        return Task.CompletedTask;
     }
 }

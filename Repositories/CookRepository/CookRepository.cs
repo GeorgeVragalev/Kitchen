@@ -5,7 +5,7 @@ namespace Kitchen.Repositories.CookRepository;
 
 public class CookRepository : ICookRepository
 {
-    private readonly ConcurrentBag<Cook> _cooks = new ConcurrentBag<Cook>();
+    private readonly ConcurrentBag<Cook?> _cooks = new ConcurrentBag<Cook?>();
     private static Mutex _mutex = new();
 
     public void GenerateCooks()
@@ -75,25 +75,25 @@ public class CookRepository : ICookRepository
         _cooks.Add(cook4);
     }
 
-    public Task<Cook> GetById(int id)
+    public async Task<Cook?> GetById(int id)
     {
         foreach (var cook in _cooks)
         {
             if (cook.Id == id)
             {
-                return Task.FromResult(cook);
+                return await Task.FromResult(cook);
             }
         }
 
-        return Task.FromResult<Cook>(null!);
+        return await Task.FromResult<Cook>(null!);
     }
 
-    public ConcurrentBag<Cook> GetAll()
+    public ConcurrentBag<Cook?> GetAll()
     {
         return _cooks;
     }
 
-    public Cook GetAvailableCook()
+    public async Task<Cook?> GetAvailableCook()
     {
         _mutex.WaitOne();
         foreach (var cook in _cooks)
@@ -102,7 +102,7 @@ public class CookRepository : ICookRepository
             {
                 cook.IsBusy = true;
                 _mutex.ReleaseMutex();
-                return cook;
+                return await Task.FromResult(cook);
             }
         }
         

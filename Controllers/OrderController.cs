@@ -14,7 +14,6 @@ public class OrderController : ControllerBase
     private readonly IOrderService _orderService;
     private readonly IFoodService _foodService;
 
-
     public OrderController(IOrderService orderService, IFoodService foodService)
     {
         _orderService = orderService;
@@ -22,13 +21,14 @@ public class OrderController : ControllerBase
     }
 
     [HttpPost]
-    public void Order([FromBody] CollectedOrder collectedOrder)
+    public async Task Order([FromBody] CollectedOrder collectedOrder)
     {
-        var order = collectedOrder.MapFinishedOrder();
+        PrintConsole.Write($"Order {collectedOrder.Id} with {collectedOrder.Foods.Count} foods received in kitchen", ConsoleColor.Green);
+
+        var order = await collectedOrder.MapFinishedOrder();
         //todo configure orders
-        _foodService.AddFoodsToList(collectedOrder.Foods, order);
+        await _foodService.AddFoodsToList(collectedOrder.Foods, order);
         _orderService.AddOrderToList(order);
-        PrintConsole.Write("Order " + order.Id + " received in kitchen", ConsoleColor.Green);
     }
 
     [HttpGet]

@@ -3,25 +3,25 @@ using Kitchen.Models.Enums;
 
 namespace Kitchen.Helpers;
 
-public static class OrderMappingExtension
+public static class ExtensionMethods
 {
-    public static Order MapFinishedOrder(this CollectedOrder order)
+    public static async Task<Order> MapFinishedOrder(this CollectedOrder order)
     {
-        var finishedOrder = new Order()
+        var finishedOrder =  new Order()
         {
             Id = order.Id,
             Priority = order.Priority,
             FoodsPreparedCount = 0,
             Foods = order.Foods,
             CookingDetails = new List<CookingDetails>(),
-            OrderStatus = OrderStatus.IsCooking,
+            OrderStatusEnum = OrderStatusEnum.IsCooking,
             MaxWait = order.MaxWait,
             CookingTime = 0,
             TableId = order.TableId,
             WaiterId = order.WaiterId,
             PickUpTime = order.PickUpTime
         };
-        return finishedOrder;
+        return await Task.FromResult(finishedOrder);
     }
 
     public static bool CheckFoodEquality(this Food food, Food foodInList)
@@ -33,7 +33,7 @@ public static class OrderMappingExtension
             food.OrderId == foodInList.OrderId &&
             food.Name == foodInList.Name &&
             food.CookingApparatus == foodInList.CookingApparatus &&
-            food.FoodStatus == foodInList.FoodStatus
+            food.FoodStatusEnum == foodInList.FoodStatusEnum
             )
         {
             return true;
@@ -44,18 +44,28 @@ public static class OrderMappingExtension
 
     public static bool CheckStatus(this IList<Food> foods)
     {
+        if (foods.Count == 0)
+        {
+            return false;
+        }
         foreach (var food in foods)
         {
-            if (food.FoodStatus == FoodStatus.NotPrepared)
+            if (food.FoodStatusEnum != FoodStatusEnum.Cooked)
             {
                 return false;
             }
         }
+        PrintConsole.Write($"{foods.Count} foods for order ID {foods[0].OrderId} ARE PREPARED", ConsoleColor.DarkCyan);
 
         return true;
     }
     public static int Apply(this int number)
     {
         return number / 10;
+    }
+    
+    public static void PrepareFood(this Food food, int waitTime)
+    {
+        Thread.Sleep(waitTime * Settings.Settings.TimeUnit);
     }
 }

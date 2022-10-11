@@ -30,7 +30,7 @@ public class OrderService : IOrderService
             using var client = new HttpClient();
 
             await client.PostAsync(url, data);
-            order.OrderStatus = OrderStatus.Served;
+            order.OrderStatusEnum = OrderStatusEnum.Served;
             Console.WriteLine();
             PrintConsole.Write("Order " + order.Id + " ready to be served", ConsoleColor.Green);
         }
@@ -45,17 +45,6 @@ public class OrderService : IOrderService
         _orderListRepository.AddOrderToList(order);
     }
 
-    public Order CollectOrder()
-    {
-        var order = _orderListRepository.CollectOrder();
-        return order;
-    }
-
-    public void IncrementPreparedFoodCounter(int id)
-    {
-        _orderListRepository.IncrementPreparedFoodCounter(id);
-    }
-    
     public Order GetUnservedOrder()
     {
         var orders = _orderListRepository.GetUnservedOrders();
@@ -66,11 +55,20 @@ public class OrderService : IOrderService
             bool completeOrder = foods.CheckStatus();
             if (completeOrder)
             {
-                
+                foreach (var food in foods)
+                {
+                    _foodService.ChangeFoodStatus(food, FoodStatusEnum.Complete);
+                }
                 return order;
             }
         }
 
         return null;
+    }
+
+    public Task CleanServedOrders()
+    {
+        _orderListRepository.CleanServedOrders();
+        return Task.CompletedTask;
     }
 }

@@ -1,7 +1,9 @@
-﻿using Kitchen.Helpers;
+﻿using System.Diagnostics.CodeAnalysis;
+using Kitchen.Helpers;
 using Kitchen.Models;
 using Kitchen.Models.Enums;
 using Kitchen.Repositories.CookRepository;
+using Kitchen.Services.CookingApparatusService;
 using Kitchen.Services.FoodService;
 using Kitchen.Services.OrderService;
 
@@ -12,12 +14,14 @@ public class CookService : ICookService
     private readonly ICookRepository _cookRepository;
     private readonly IOrderService _orderService;
     private readonly IFoodService _foodService;
+    private readonly ICookingApparatusService _apparatusService;
 
-    public CookService(ICookRepository cookRepository, IOrderService orderService, IFoodService foodService)
+    public CookService(ICookRepository cookRepository, IOrderService orderService, IFoodService foodService, ICookingApparatusService apparatusService)
     {
         _cookRepository = cookRepository;
         _orderService = orderService;
         _foodService = foodService;
+        _apparatusService = apparatusService;
     }
 
     public void GenerateCooks()
@@ -30,43 +34,52 @@ public class CookService : ICookService
         _cookRepository.TestConfiguration();
     }
 
-    public Cook GetAvailableCook()
+    public async Task<Cook?> GetAvailableCook()
     {
-        var cook = _cookRepository.GetAvailableCook();
+        var cook = await _cookRepository.GetAvailableCook();
         if (cook != null)
         {
-            return cook;
+            return await Task.FromResult(cook);
         }
 
         return null;
     }
 
-    public void MakeCookBusy(Cook cook, IList<Food> foodsToCook)
+    public void MakeCookBusy(Cook cook)
     {
-        if (foodsToCook != null && cook.MaxFoodsCanCook > 0)
+        var threads = cook.Proficiency;
+        for (int i = 0; i < threads; i++)
         {
-            var foodsCanCook = cook.MaxFoodsCanCook;
+            Thread t5 = new Thread(() => PrepareFoodParallel(cook));
+            t5.Start();
+        }
 
-            cook.MaxFoodsCanCook = 0;
+        cook.IsBusy = false;
+    }
 
-            var maxWait = foodsToCook.AsQueryable().OrderByDescending(f => f.PreparationTime)
-                .Select(f => f.PreparationTime).FirstOrDefault().Apply();
+    [SuppressMessage("ReSharper.DPA", "DPA0001: Memory allocation issues")]
+    private async Task PrepareFoodParallel(Cook cook)
+    {
+        while (true)
+        {
+            var food = await _foodService.GetOptimalFoodToCook(cook.Proficiency);
 
-            Thread.Sleep(maxWait * Settings.Settings.TimeUnit);
-
-            foreach (var food in foodsToCook)
+            if (food != null)
             {
-                if (foodsCanCook > 0)
+                PrintConsole.Write($"Cook {cook.Id} found food with id {food.Id} orderId: {food.OrderId} foodStatus: {food.FoodStatusEnum}", ConsoleColor.DarkGreen);
+                
+                var cookedFood = await _apparatusService.PrepareFood(food);
+
+                if (cookedFood)
                 {
-                    //todo check that inceremennt works properly
-                    _foodService.MarkFoodAsCooked(food);
-                    // _orderService.IncrementPreparedFoodCounter(food.OrderId);
-                    foodsCanCook--;
+                    _foodService.ChangeFoodStatus(food, FoodStatusEnum.Cooked);
+                    PrintConsole.Write($"Cook {cook.Id} prepared food {food.Id} orderId: {food.OrderId} foodStatus: {food.FoodStatusEnum}", ConsoleColor.Green);
                 }
             }
-
-            cook.MaxFoodsCanCook += foodsToCook.Count;
-            cook.IsBusy = false;
+            else
+            {
+                Thread.Sleep(1000);
+            }
         }
     }
 }

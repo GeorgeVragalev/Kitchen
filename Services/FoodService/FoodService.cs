@@ -1,6 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using Kitchen.Helpers;
 using Kitchen.Models;
+using Kitchen.Models.Enums;
 using Kitchen.Repositories.FoodRepository;
 using Kitchen.Services.OrderService;
 
@@ -20,37 +21,40 @@ public class FoodService : IFoodService
         return _foodRepository.GenerateFood();
     }
 
-    public Task<Food> GetFoodById(int id)
+    public async Task<Food> GetFoodById(int id)
     {
-        return _foodRepository.GetFoodById(id);
+        return await _foodRepository.GetFoodById(id);
     }
 
-    public IList<Food> GetFoodsByIds(IList<int> foods)
+    public async Task<IList<Food>> GetFoodsByIds(IList<int> foods)
     {
-        return _foodRepository.GetFoodsByIds(foods);
+        return await _foodRepository.GetFoodsByIds(foods);
     }
     
-    public void AddFoodsToList(IList<int> foods, Order order)
+    public async Task AddFoodsToList(IList<int> foods, Order order)
     {
-        var foodsList = GetFoodsByIds(foods);
+        var foodsList = await _foodRepository.GetFoodsByIds(foods);
         _foodRepository.AddFoodsToList(foodsList, order);
     }
 
-    public IList<Food> GetOptimalFoodsToCook(int cookProficiency, int maxFoodsCanCook)
+    public async Task<Food?> GetOptimalFoodToCook(int cookProficiency)
     {
-        var foods = _foodRepository.GetOptimalFoodsToCook(cookProficiency, maxFoodsCanCook);
-        return foods;
+        var food = await _foodRepository.GetOptimalFoodToCook(cookProficiency);
+        return await Task.FromResult(food);
     }
 
-    public void MarkFoodAsCooked(Food food)
+    public void ChangeFoodStatus(Food food, FoodStatusEnum foodStatus)
     {
-        _foodRepository.MarkFoodAsCooked(food);
-        //todo make another way to check if an order is ready
-        // _orderService.IncrementPreparedFoodCounter(food.OrderId);
+        _foodRepository.ChangeFoodStatus(food, FoodStatusEnum.Cooked);
     }
 
     public IList<Food> GetFoodsByOrder(int orderId)
     {
         return _foodRepository.GetFoodsByOrder(orderId);
+    }
+
+    public void PrintFoods()
+    {
+        _foodRepository.PrintFoods();
     }
 }

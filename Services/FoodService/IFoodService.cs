@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using Kitchen.Models;
+using Kitchen.Models.Enums;
 
 namespace Kitchen.Services.FoodService;
 
@@ -7,9 +8,10 @@ public interface IFoodService
 {
     public ConcurrentBag<Food> GenerateMenu();
     public Task<Food> GetFoodById(int id);
-    public IList<Food> GetFoodsByIds(IList<int> foods);
-    public void AddFoodsToList(IList<int> foods, Order order);
-    public IList<Food> GetOptimalFoodsToCook(int cookProficiency, int maxFoodsCanCook);
+    public Task<IList<Food>> GetFoodsByIds(IList<int> foods);
+    public Task AddFoodsToList(IList<int> foods, Order order);
+    public Task<Food?> GetOptimalFoodToCook(int cookProficiency);
     public IList<Food> GetFoodsByOrder(int orderId);
-    public void MarkFoodAsCooked(Food food);
+    public void ChangeFoodStatus(Food food, FoodStatusEnum foodStatus);
+    public void PrintFoods();
 }

@@ -1,6 +1,6 @@
 ﻿namespace Kitchen.Models.Enums;
 
-public enum OrderStatus
+public enum OrderStatusEnum
 {
     IsCooking = 1,
     Served = 2

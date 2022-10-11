@@ -6,6 +6,6 @@ public interface ICookService
 {
     public void GenerateCooks();
     public void TestConfiguration();
-    public Cook GetAvailableCook();
-    public void MakeCookBusy(Cook cook, IList<Food> foodsToCook);
+    public Task<Cook?> GetAvailableCook();
+    public void MakeCookBusy(Cook cook);
 }

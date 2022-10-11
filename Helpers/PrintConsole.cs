@@ -7,4 +7,10 @@ public static class PrintConsole
         Console.ForegroundColor = color;
         Console.WriteLine(message);
     } 
+    
+    public static void WriteSpace(string message, ConsoleColor color)
+    {
+        Console.ForegroundColor = color;
+        Console.Write(message);
+    } 
 }
