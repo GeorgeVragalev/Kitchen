@@ -235,26 +235,6 @@ public class FoodRepository : IFoodRepository
                     .ThenBy(f => f.PreparationTime)
                     .FirstOrDefault();
             }
-            if (food == null && cookProficiency > 2)
-            {
-                food = _foodsList.AsQueryable()
-                    .Where(f => f.FoodStatusEnum == FoodStatusEnum.NotPrepared)
-                    .Where(f => f.Complexity == cookProficiency - 2)
-                    .OrderBy(f => f.OrderId)
-                    .ThenBy(f => f.Priority)
-                    .ThenBy(f => f.PreparationTime)
-                    .FirstOrDefault();
-            }
-            if (food == null && cookProficiency > 3)
-            {
-                food = _foodsList.AsQueryable()
-                    .Where(f => f.FoodStatusEnum == FoodStatusEnum.NotPrepared)
-                    .Where(f => f.Complexity == cookProficiency - 3)
-                    .OrderBy(f => f.OrderId)
-                    .ThenBy(f => f.Priority)
-                    .ThenBy(f => f.PreparationTime)
-                    .FirstOrDefault();
-            }
 
             if (food != null)
             {

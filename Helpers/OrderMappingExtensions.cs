@@ -59,11 +59,7 @@ public static class ExtensionMethods
 
         return true;
     }
-    public static int Apply(this int number)
-    {
-        return number / 10;
-    }
-    
+   
     public static void PrepareFood(this Food food, int waitTime)
     {
         Thread.Sleep(waitTime * Settings.Settings.TimeUnit);

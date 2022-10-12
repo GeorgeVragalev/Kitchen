@@ -64,7 +64,7 @@ public class CookService : ICookService
 
             if (food != null)
             {
-                PrintConsole.Write($"Cook {cook.Id} found food with id {food.Id} orderId: {food.OrderId} foodStatus: {food.FoodStatusEnum}", ConsoleColor.DarkGreen);
+                PrintConsole.Write($"Cook {cook.Id} found food with id {food.Id} orderId: {food.OrderId} time {food.PreparationTime} foodStatus: {food.FoodStatusEnum}", ConsoleColor.DarkGreen);
                 
                 var cookedFood = await _apparatusService.PrepareFood(food);
 
