@@ -76,7 +76,7 @@ public class CookService : ICookService
             }
             else
             {
-                Thread.Sleep(1000);
+                Thread.Sleep(1*Settings.Settings.TimeUnit);
             }
         }
     }
