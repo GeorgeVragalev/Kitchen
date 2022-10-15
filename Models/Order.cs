@@ -6,8 +6,10 @@ namespace Kitchen.Models;
 
 public class Order : BaseEntity
 { 
-    public int TableId { get; set; }
-    public int WaiterId { get; set; }
+    public int? ClientId { get; set; }
+    public int RestaurantId { get; set; }
+    public int? TableId { get; set; }
+    public int? WaiterId { get; set; }
     public int Priority { get; set; }
     public int CookingTime { get; set; }
     public int MaxWait { get; set; }
