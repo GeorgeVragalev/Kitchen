@@ -14,6 +14,7 @@ public class CookService : ICookService
     private readonly ICookRepository _cookRepository;
     private readonly IFoodService _foodService;
     private readonly ICookingApparatusService _apparatusService;
+    private static Mutex _mutex = new();
 
     public CookService(ICookRepository cookRepository, IFoodService foodService, ICookingApparatusService apparatusService)
     {
@@ -45,7 +46,16 @@ public class CookService : ICookService
 
     public void MakeCookBusy(Cook cook)
     {
+        //lock mutex
         var threads = cook.Proficiency;
+        
+        // if (cook.Proficiency > 2)
+        // {
+        //     async void Start() => await PrepareFoodParallel(cook, isClientFood: true);
+        //     Thread t = new Thread(Start);
+        //     t.Start();
+        // }
+        
         for (int i = 0; i < threads; i++)
         {
             Thread t = new Thread(() => PrepareFoodParallel(cook));
@@ -56,21 +66,25 @@ public class CookService : ICookService
     }
 
     [SuppressMessage("ReSharper.DPA", "DPA0001: Memory allocation issues")]
-    private async Task PrepareFoodParallel(Cook cook)
+    private async Task PrepareFoodParallel(Cook cook, bool isClientFood = false)
     {
         while (true)
         {
-            var food = await _foodService.GetOptimalFoodToCook(cook.Proficiency);
+            var food = await _foodService.GetOptimalFoodToCook(cook.Proficiency, isClientFood);
 
             if (food != null)
             {
+                if (isClientFood)
+                {
+                    PrintConsole.Write($"Client iD found {food.ClientId}", ConsoleColor.DarkGreen);
+                }
                 PrintConsole.Write($"Cook {cook.Id} found food with id {food.Id} orderId: {food.OrderId} time {food.PreparationTime} foodStatus: {food.FoodStatusEnum}", ConsoleColor.DarkGreen);
                 
                 var cookedFood = await _apparatusService.PrepareFood(food);
 
                 if (cookedFood)
                 {
-                    _foodService.ChangeFoodStatus(food, FoodStatusEnum.Cooked);
+                    await _foodService.ChangeFoodStatus(food, FoodStatusEnum.Cooked);
                     PrintConsole.Write($"Cook {cook.Id} prepared food {food.Id} orderId: {food.OrderId} foodStatus: {food.FoodStatusEnum}", ConsoleColor.Green);
                 }
             }

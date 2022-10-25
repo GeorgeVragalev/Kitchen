@@ -11,6 +11,7 @@ public class Food : BaseEntity
     public CookingApparatusEnum CookingApparatus { get; set; }
     public FoodStatusEnum FoodStatusEnum { get; set; }
     public int OrderId { get; set; }
+    public int? ClientId { get; set; }
 
     public Food() { }
 }

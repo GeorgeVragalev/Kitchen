@@ -40,24 +40,24 @@ public class OrderService : IOrderService
         }
     }
 
-    public void AddOrderToList(Order order)
+    public async Task AddOrderToList(Order order)
     {
-        _orderListRepository.AddOrderToList(order);
+        await _orderListRepository.AddOrderToList(order);
     }
 
-    public Order GetUnservedOrder()
+    public async Task<Order> GetUnservedOrder()
     {
         var orders = _orderListRepository.GetUnservedOrders();
 
         foreach (var order in orders)
         {
-            var foods = _foodService.GetFoodsByOrder(order.Id);
+            var foods = await _foodService.GetFoodsByOrder(order.Id);
             bool completeOrder = foods.CheckStatus();
             if (completeOrder)
             {
                 foreach (var food in foods)
                 {
-                    _foodService.ChangeFoodStatus(food, FoodStatusEnum.Complete);
+                    await _foodService.ChangeFoodStatus(food, FoodStatusEnum.Complete);
                 }
                 return order;
             }
@@ -66,9 +66,8 @@ public class OrderService : IOrderService
         return null;
     }
 
-    public Task CleanServedOrders()
+    public async Task CleanServedOrders()
     {
-        _orderListRepository.CleanServedOrders();
-        return Task.CompletedTask;
+        await _orderListRepository.CleanServedOrders();
     }
 }

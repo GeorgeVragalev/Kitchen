@@ -9,10 +9,11 @@ public class OrderListRepository : IOrderListRepository
 {
     private readonly ConcurrentBag< Order> _orderList = new ConcurrentBag<Order>();
 
-    public void AddOrderToList(Order order)
+    public Task AddOrderToList(Order order)
     {
-        _orderList.Add( order);
+         _orderList.Add(order);
         PrintConsole.Write($"Order {order.Id} added to list", ConsoleColor.DarkBlue);
+        return Task.CompletedTask;
     }
 
     public IList<Order> GetUnservedOrders()
@@ -28,6 +29,7 @@ public class OrderListRepository : IOrderListRepository
         {
             orders.Clear();
         }
+
         return Task.CompletedTask;
     }
 }

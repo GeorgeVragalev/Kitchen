@@ -52,11 +52,11 @@ public class Kitchen : IKitchen
         t5.Start();
     }
 
-    private void SendOrder(CancellationToken cancellationToken)
+    private async Task SendOrder(CancellationToken cancellationToken)
     {
         while (!cancellationToken.IsCancellationRequested)
         {
-            var order = _orderService.GetUnservedOrder();
+            var order = await _orderService.GetUnservedOrder();
             if (order != null)
             {
                 PrintConsole.Write($"Found order with id {order.Id} ready to be sent", ConsoleColor.Blue);
@@ -66,7 +66,7 @@ public class Kitchen : IKitchen
             }
             else
             {
-                _orderService.CleanServedOrders();
+                await _orderService.CleanServedOrders();
                 Thread.Sleep(2 * Settings.Settings.TimeUnit);
             }
         }
@@ -75,8 +75,18 @@ public class Kitchen : IKitchen
     [SuppressMessage("ReSharper.DPA", "DPA0001: Memory allocation issues")]
     public async Task RunKitchen(CancellationToken cancellationToken)
     {
-        var cook = await _cookService.GetAvailableCook();
-        PrintConsole.Write($"Found cook {cook.Id}", ConsoleColor.Blue);
-        _cookService.MakeCookBusy(cook);
+        while (!cancellationToken.IsCancellationRequested)
+        {
+            if (!await _foodService.IsOrderListEmpty())
+            {
+                var cook = await _cookService.GetAvailableCook();
+                _cookService.MakeCookBusy(cook);
+                break;
+            }
+            else
+            {
+                Thread.Sleep(5000);
+            }
+        }
     }
 }

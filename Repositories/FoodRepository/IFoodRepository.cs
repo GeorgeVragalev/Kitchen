@@ -10,8 +10,9 @@ public interface IFoodRepository
     public Task<Food> GetFoodById(int id);
     public Task<IList<Food>> GetFoodsByIds(IList<int> foods);
     public void AddFoodsToList(IList<Food> foods,Order order);
-    public Task<Food?> GetOptimalFoodToCook(int cookProficiency);
-    public void ChangeFoodStatus(Food food, FoodStatusEnum foodStatus);
+    public Task<Food?> GetOptimalFoodToCook(int cookProficiency, bool isClientFood);
+    public Task ChangeFoodStatus(Food food, FoodStatusEnum foodStatus);
     public IList<Food> GetFoodsByOrder(int orderId);
     public void PrintFoods();
+    public Task<bool> IsOrderListEmpty();
 }

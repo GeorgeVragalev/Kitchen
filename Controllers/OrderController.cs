@@ -23,12 +23,12 @@ public class OrderController : ControllerBase
     [HttpPost]
     public async Task Order([FromBody] CollectedOrder collectedOrder)
     {
-        PrintConsole.Write($"Order {collectedOrder.Id} with {collectedOrder.Foods.Count} foods received in kitchen", ConsoleColor.Green);
+        PrintConsole.Write($"{collectedOrder.OrderType} Order {collectedOrder.Id} with {collectedOrder.Foods.Count} foods received in kitchen", ConsoleColor.Green);
 
         var order = await collectedOrder.MapFinishedOrder();
         //todo configure orders
         await _foodService.AddFoodsToList(collectedOrder.Foods, order);
-        _orderService.AddOrderToList(order);
+        await _orderService.AddOrderToList(order);
     }
 
     [HttpGet]

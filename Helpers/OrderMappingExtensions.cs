@@ -11,7 +11,6 @@ public static class ExtensionMethods
         {
             Id = order.Id,
             Priority = order.Priority,
-            FoodsPreparedCount = 0,
             Foods = order.Foods,
             CookingDetails = new List<CookingDetails>(),
             OrderStatusEnum = OrderStatusEnum.IsCooking,
@@ -19,7 +18,11 @@ public static class ExtensionMethods
             CookingTime = 0,
             TableId = order.TableId,
             WaiterId = order.WaiterId,
-            PickUpTime = order.PickUpTime
+            PickUpTime = order.PickUpTime,
+            ClientId = order.ClientId,
+            RestaurantId = order.RestaurantId,
+            GroupOrderId = order.GroupOrderId,
+            OrderType = order.OrderType
         };
         return await Task.FromResult(finishedOrder);
     }

@@ -37,24 +37,29 @@ public class FoodService : IFoodService
         _foodRepository.AddFoodsToList(foodsList, order);
     }
 
-    public async Task<Food?> GetOptimalFoodToCook(int cookProficiency)
+    public async Task<Food?> GetOptimalFoodToCook(int cookProficiency, bool isClientFood)
     {
-        var food = await _foodRepository.GetOptimalFoodToCook(cookProficiency);
+        var food = await _foodRepository.GetOptimalFoodToCook(cookProficiency, isClientFood);
         return await Task.FromResult(food);
     }
 
-    public void ChangeFoodStatus(Food food, FoodStatusEnum foodStatus)
+    public async Task ChangeFoodStatus(Food food, FoodStatusEnum foodStatus)
     {
-        _foodRepository.ChangeFoodStatus(food, FoodStatusEnum.Cooked);
+        await _foodRepository.ChangeFoodStatus(food, FoodStatusEnum.Cooked);
     }
 
-    public IList<Food> GetFoodsByOrder(int orderId)
+    public async Task<IList<Food>> GetFoodsByOrder(int orderId)
     {
-        return _foodRepository.GetFoodsByOrder(orderId);
+        return await Task.FromResult(_foodRepository.GetFoodsByOrder(orderId));
     }
 
     public void PrintFoods()
     {
         _foodRepository.PrintFoods();
+    }
+    
+    public async Task<bool> IsOrderListEmpty()
+    {
+        return await Task.FromResult(await _foodRepository.IsOrderListEmpty());
     }
 }

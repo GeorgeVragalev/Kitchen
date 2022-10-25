@@ -23,7 +23,8 @@ public class FoodRepository : IFoodRepository
             FoodStatusEnum = FoodStatusEnum.NotPrepared,
             Complexity = 2,
             Priority = 0,
-            CookingApparatus = CookingApparatusEnum.Oven
+            CookingApparatus = CookingApparatusEnum.Oven,
+            ClientId = 0
         });
         _menu.Add(new Food
         {
@@ -34,7 +35,8 @@ public class FoodRepository : IFoodRepository
             FoodStatusEnum = FoodStatusEnum.NotPrepared,
             Complexity = 1,
             Priority = 0,
-            CookingApparatus = CookingApparatusEnum.None
+            CookingApparatus = CookingApparatusEnum.None,
+            ClientId = 0
         });
         _menu.Add(new Food
         {
@@ -45,7 +47,8 @@ public class FoodRepository : IFoodRepository
             FoodStatusEnum = FoodStatusEnum.NotPrepared,
             Complexity = 1,
             Priority = 0,
-            CookingApparatus = CookingApparatusEnum.Stove
+            CookingApparatus = CookingApparatusEnum.Stove,
+            ClientId = 0
         });
         _menu.Add(new Food
         {
@@ -56,7 +59,8 @@ public class FoodRepository : IFoodRepository
             FoodStatusEnum = FoodStatusEnum.NotPrepared,
             Complexity = 3,
             Priority = 0,
-            CookingApparatus = CookingApparatusEnum.None
+            CookingApparatus = CookingApparatusEnum.None,
+            ClientId = 0
         });
         _menu.Add(new Food
         {
@@ -67,7 +71,8 @@ public class FoodRepository : IFoodRepository
             FoodStatusEnum = FoodStatusEnum.NotPrepared,
             Complexity = 3,
             Priority = 0,
-            CookingApparatus = CookingApparatusEnum.Oven
+            CookingApparatus = CookingApparatusEnum.Oven,
+            ClientId = 0
         });
         _menu.Add(new Food
         {
@@ -78,7 +83,8 @@ public class FoodRepository : IFoodRepository
             FoodStatusEnum = FoodStatusEnum.NotPrepared,
             Complexity = 1,
             Priority = 0,
-            CookingApparatus = CookingApparatusEnum.Stove
+            CookingApparatus = CookingApparatusEnum.Stove,
+            ClientId = 0
         });
         _menu.Add(new Food
         {
@@ -89,7 +95,8 @@ public class FoodRepository : IFoodRepository
             FoodStatusEnum = FoodStatusEnum.NotPrepared,
             Complexity = 2,
             Priority = 0,
-            CookingApparatus = CookingApparatusEnum.Oven
+            CookingApparatus = CookingApparatusEnum.Oven,
+            ClientId = 0
         });
         _menu.Add(new Food
         {
@@ -100,7 +107,8 @@ public class FoodRepository : IFoodRepository
             FoodStatusEnum = FoodStatusEnum.NotPrepared,
             Complexity = 2,
             Priority = 0,
-            CookingApparatus = CookingApparatusEnum.Oven
+            CookingApparatus = CookingApparatusEnum.Oven,
+            ClientId = 0
         });
         _menu.Add(new Food
         {
@@ -111,7 +119,8 @@ public class FoodRepository : IFoodRepository
             FoodStatusEnum = FoodStatusEnum.NotPrepared,
             Complexity = 1,
             Priority = 0,
-            CookingApparatus = CookingApparatusEnum.Stove
+            CookingApparatus = CookingApparatusEnum.Stove,
+            ClientId = 0
         });
         _menu.Add(new Food
         {
@@ -122,7 +131,8 @@ public class FoodRepository : IFoodRepository
             FoodStatusEnum = FoodStatusEnum.NotPrepared,
             Complexity = 1,
             Priority = 0,
-            CookingApparatus = CookingApparatusEnum.None
+            CookingApparatus = CookingApparatusEnum.None,
+            ClientId = 0
         });
 
         _menu.Add(new Food
@@ -134,7 +144,8 @@ public class FoodRepository : IFoodRepository
             FoodStatusEnum = FoodStatusEnum.NotPrepared,
             Complexity = 1,
             Priority = 0,
-            CookingApparatus = CookingApparatusEnum.None
+            CookingApparatus = CookingApparatusEnum.None,
+            ClientId = 0
         });
         _menu.Add(new Food
         {
@@ -145,7 +156,8 @@ public class FoodRepository : IFoodRepository
             FoodStatusEnum = FoodStatusEnum.NotPrepared,
             Complexity = 2,
             Priority = 0,
-            CookingApparatus = CookingApparatusEnum.None
+            CookingApparatus = CookingApparatusEnum.None,
+            ClientId = 0
         });
         _menu.Add(new Food
         {
@@ -156,7 +168,8 @@ public class FoodRepository : IFoodRepository
             FoodStatusEnum = FoodStatusEnum.NotPrepared,
             Complexity = 2,
             Priority = 0,
-            CookingApparatus = CookingApparatusEnum.Oven
+            CookingApparatus = CookingApparatusEnum.Oven,
+            ClientId = 0
         });
 
         return _menu;
@@ -173,6 +186,7 @@ public class FoodRepository : IFoodRepository
             Priority = foodFromList.Priority,
             CookingApparatus = foodFromList.CookingApparatus,
             OrderId = foodFromList.OrderId,
+            ClientId = foodFromList.ClientId,
             PreparationTime = foodFromList.PreparationTime,
             FoodStatusEnum = foodFromList.FoodStatusEnum,
         };
@@ -196,13 +210,14 @@ public class FoodRepository : IFoodRepository
         foreach (var food in foods)
         {
             food.Priority = order.Priority;
+            food.ClientId = order.ClientId;
             food.OrderId = order.Id;
             food.FoodStatusEnum = FoodStatusEnum.NotPrepared;
             _foodsList.Add(food);
         }
     }
 
-    public void ChangeFoodStatus(Food food, FoodStatusEnum foodStatus)
+    public Task ChangeFoodStatus(Food food, FoodStatusEnum foodStatus)
     {
         _mutex.WaitOne();
         var foodInList = _foodsList.AsQueryable().FirstOrDefault(f => f.CheckFoodEquality(food));
@@ -210,27 +225,32 @@ public class FoodRepository : IFoodRepository
         {
             foodInList.FoodStatusEnum = foodStatus;
         }
+
         _mutex.ReleaseMutex();
+        return Task.CompletedTask;
     }
 
-    public async Task<Food?> GetOptimalFoodToCook(int cookProficiency)
+    public async Task<Food?> GetOptimalFoodToCook(int cookProficiency, bool isClientFood)
     {
         _mutex.WaitOne();
+        //todo get client food
         if (_foodsList.Count != 0)
         {
             var food = _foodsList.AsQueryable()
+                // .Where(f=> isClientFood ? f.ClientId != 0 : f.ClientId == 0)
                 .Where(f => f.FoodStatusEnum == FoodStatusEnum.NotPrepared)
                 .Where(f => f.Complexity == cookProficiency)
-                .OrderBy(f => f.OrderId)
+                .OrderBy(f => isClientFood ? f.ClientId : f.OrderId)
                 .ThenBy(f => f.Priority)
                 .ThenBy(f => f.PreparationTime)
                 .FirstOrDefault();
             if (food == null && cookProficiency > 1)
             {
                 food = _foodsList.AsQueryable()
+                    // .Where(f=> isClientFood ? f.ClientId != 0 : f.ClientId == 0)
                     .Where(f => f.FoodStatusEnum == FoodStatusEnum.NotPrepared)
                     .Where(f => f.Complexity == cookProficiency - 1)
-                    .OrderBy(f => f.OrderId)
+                    .OrderBy(f => isClientFood ? f.ClientId : f.OrderId)
                     .ThenBy(f => f.Priority)
                     .ThenBy(f => f.PreparationTime)
                     .FirstOrDefault();
@@ -240,7 +260,7 @@ public class FoodRepository : IFoodRepository
             {
                 food.FoodStatusEnum = FoodStatusEnum.IsCooking;
             }
-            
+
             _mutex.ReleaseMutex();
             return await Task.FromResult(food);
         }
@@ -258,10 +278,18 @@ public class FoodRepository : IFoodRepository
     public void PrintFoods()
     {
         var foods = _foodsList.ToList();
-        PrintConsole.Write($"-----------------------------------------------------------------------------", ConsoleColor.Magenta);
-        foreach (var food in foods)     
+        PrintConsole.Write($"-----------------------------------------------------------------------------",
+            ConsoleColor.Magenta);
+        foreach (var food in foods)
         {
-            PrintConsole.WriteSpace($"Food {food.Id} | Order: {food.OrderId} | Status: {food.FoodStatusEnum.ToString()} \n", ConsoleColor.Magenta);
+            PrintConsole.WriteSpace(
+                $"Food {food.Id} | Order: {food.OrderId} | Status: {food.FoodStatusEnum.ToString()} \n",
+                ConsoleColor.Magenta);
         }
+    }
+
+    public async Task<bool> IsOrderListEmpty()
+    {
+        return await Task.FromResult(_foodsList.IsEmpty);
     }
 }

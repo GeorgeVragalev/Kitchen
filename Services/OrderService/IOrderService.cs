@@ -5,7 +5,7 @@ namespace Kitchen.Services.OrderService;
 public interface IOrderService
 {
     public void SendOrder(Order order);
-    public void AddOrderToList(Order order);
-    public Order GetUnservedOrder();
+    public Task AddOrderToList(Order order);
+    public Task<Order> GetUnservedOrder();
     public Task CleanServedOrders();
 }

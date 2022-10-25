@@ -4,7 +4,7 @@ namespace Kitchen.Repositories.OrderListRepository;
 
 public interface IOrderListRepository
 {
-    public void AddOrderToList(Order order);
+    public Task AddOrderToList(Order order);
     public IList<Order> GetUnservedOrders();
     public Task CleanServedOrders();
 }
