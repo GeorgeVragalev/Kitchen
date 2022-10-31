@@ -195,12 +195,14 @@ public class FoodRepository : IFoodRepository
 
     public async Task<IList<Food>> GetFoodsByIds(IList<int> foods)
     {
+        _mutex.WaitOne();
         var foodsList = new List<Food>();
         foreach (var foodId in foods)
         {
             var food = await GetFoodById(foodId);
             foodsList.Add(food);
         }
+        _mutex.ReleaseMutex();
 
         return await Task.FromResult<IList<Food>>(foodsList);
     }
@@ -220,7 +222,7 @@ public class FoodRepository : IFoodRepository
     public Task ChangeFoodStatus(Food food, FoodStatusEnum foodStatus)
     {
         _mutex.WaitOne();
-        var foodInList = _foodsList.AsQueryable().FirstOrDefault(f => f.CheckFoodEquality(food));
+        var foodInList = _foodsList.AsQueryable().FirstOrDefault(f => f.Equals(food));
         if (foodInList != null)
         {
             foodInList.FoodStatusEnum = foodStatus;

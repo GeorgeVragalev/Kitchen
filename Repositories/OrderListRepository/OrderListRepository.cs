@@ -8,11 +8,14 @@ namespace Kitchen.Repositories.OrderListRepository;
 public class OrderListRepository : IOrderListRepository
 {
     private readonly ConcurrentBag< Order> _orderList = new ConcurrentBag<Order>();
+    private static Mutex _mutex = new();
 
     public Task AddOrderToList(Order order)
     {
+        _mutex.WaitOne();
          _orderList.Add(order);
         PrintConsole.Write($"Order {order.Id} added to list", ConsoleColor.DarkBlue);
+        _mutex.ReleaseMutex();
         return Task.CompletedTask;
     }
 

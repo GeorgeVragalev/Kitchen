@@ -5,8 +5,11 @@ namespace Kitchen.Helpers;
 
 public static class ExtensionMethods
 {
+    private static Mutex _mutex = new();
+
     public static async Task<Order> MapFinishedOrder(this CollectedOrder order)
     {
+        _mutex.WaitOne();
         var finishedOrder =  new Order()
         {
             Id = order.Id,
@@ -24,25 +27,8 @@ public static class ExtensionMethods
             GroupOrderId = order.GroupOrderId,
             OrderType = order.OrderType
         };
+        _mutex.ReleaseMutex();
         return await Task.FromResult(finishedOrder);
-    }
-
-    public static bool CheckFoodEquality(this Food food, Food foodInList)
-    {
-        if (food.Id == foodInList.Id &&
-            food.PreparationTime == foodInList.PreparationTime &&
-            food.Complexity == foodInList.Complexity &&
-            food.Priority == foodInList.Priority &&
-            food.OrderId == foodInList.OrderId &&
-            food.Name == foodInList.Name &&
-            food.CookingApparatus == foodInList.CookingApparatus &&
-            food.FoodStatusEnum == foodInList.FoodStatusEnum
-            )
-        {
-            return true;
-        }
-
-        return false;
     }
 
     public static bool CheckStatus(this IList<Food> foods)
